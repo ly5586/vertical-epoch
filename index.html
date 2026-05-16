@@ -6,15 +6,9 @@
 <title>垂直纪元·劳工的诅咒</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{
-    background:#0a0806;color:#797962;
-    font-family:"Microsoft YaHei","PingFang SC",sans-serif;
-    display:flex;flex-direction:column;align-items:center;
-    min-height:100vh;padding:12px 8px;user-select:none;
-  }
+  body{background:#0a0806;color:#797962;font-family:"Microsoft YaHei","PingFang SC",sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:12px 8px;user-select:none}
   h1{font-size:21px;letter-spacing:5px;color:#9f9f9f;margin-bottom:1px}
   .subtitle{font-size:10px;color:#535624;letter-spacing:3px;margin-bottom:8px}
-
   #resource-bar{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap;justify-content:center}
   .res-item{display:flex;align-items:center;gap:4px;background:#12100e;border:1px solid #1e1c18;border-radius:3px;padding:4px 10px;min-width:90px}
   .res-icon{font-size:14px;width:18px;text-align:center;opacity:0.65}
@@ -25,34 +19,20 @@
   .res-food  .res-value{color:#6b8b37}
   .res-wood  .res-value{color:#b8860b}
   .res-stone .res-value{color:#9f9f9f}
-
   #game-canvas{border:1px solid #1e1c18;border-radius:3px;cursor:pointer;display:block;max-width:100%;height:auto}
-
   #info-panel{margin-top:6px;min-height:32px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
   #info-panel .msg{font-size:11px;color:#797962;padding:4px 8px;background:#12100e;border:1px solid #1e1c18;border-radius:3px}
-  #info-panel .btn{
-    font-size:11px;padding:4px 10px;border:1px solid #404040;border-radius:3px;
-    background:#12100e;color:#797962;cursor:pointer;letter-spacing:1px;
-    transition:background .12s,border-color .12s,color .12s;
-  }
+  #info-panel .btn{font-size:11px;padding:4px 10px;border:1px solid #404040;border-radius:3px;background:#12100e;color:#797962;cursor:pointer;letter-spacing:1px;transition:background .12s,border-color .12s,color .12s}
   #info-panel .btn:hover{background:#1a1810;border-color:#535624;color:#9f9f9f}
   #info-panel .btn:active{background:#1e1c14}
   #info-panel .btn.disabled{opacity:.3;pointer-events:none}
   #info-panel .btn.danger{border-color:#402020;color:#996}
   #info-panel .btn.danger:hover{border-color:#804040;color:#c88;background:#1a1010}
-
-  #tooltip{
-    position:fixed;pointer-events:none;z-index:99;
-    font-size:10px;color:#c8c8a0;background:#12100e;
-    border:1px solid #404020;border-radius:3px;padding:3px 7px;
-    display:none;white-space:nowrap;
-  }
-
+  #tooltip{position:fixed;pointer-events:none;z-index:99;font-size:10px;color:#c8c8a0;background:#12100e;border:1px solid #404020;border-radius:3px;padding:3px 7px;display:none;white-space:nowrap}
+  #failure-msg{position:fixed;pointer-events:none;z-index:98;font-size:10px;color:#cc8866;background:#1a1010;border:1px solid #603030;border-radius:3px;padding:3px 8px;display:none;white-space:nowrap;transition:opacity .8s}
   #log{margin-top:4px;font-size:9px;color:#404020;max-width:700px;text-align:center;line-height:1.7;max-height:54px;overflow-y:auto}
-
   #critique{margin-top:10px;font-size:10px;color:#404020;letter-spacing:1px;text-align:center;max-width:660px;line-height:1.6;border-top:1px solid #14120e;padding-top:8px}
   #critique em{color:#535624;font-style:normal}
-
   #restart-btn{margin-top:6px;font-size:10px;padding:3px 10px;border:1px solid #1e1c18;border-radius:3px;background:transparent;color:#404020;cursor:pointer;letter-spacing:1px}
   #restart-btn:hover{color:#797962;border-color:#404040}
   .hint{font-size:8px;color:#2a2810;margin-top:2px;letter-spacing:.5px}
@@ -61,102 +41,457 @@
 <body>
 <h1>垂直纪元·劳工的诅咒</h1>
 <div class="subtitle">VERTICAL EPOCH: THE WORKER'S CURSE</div>
-
 <div id="resource-bar">
   <div class="res-item res-labor"><span class="res-icon">&#x2692;</span><div class="res-info"><span class="res-label">劳动力 / 工时</span><span class="res-value" id="val-labor">80</span></div></div>
   <div class="res-item res-food"><span class="res-icon">&#x2618;</span><div class="res-info"><span class="res-label">食物</span><span class="res-value" id="val-food">50</span></div></div>
   <div class="res-item res-wood"><span class="res-icon">&#x26D0;</span><div class="res-info"><span class="res-label">木材</span><span class="res-value" id="val-wood">30</span></div></div>
   <div class="res-item res-stone"><span class="res-icon">&#x26F0;</span><div class="res-info"><span class="res-label">石材</span><span class="res-value" id="val-stone">25</span></div></div>
 </div>
-
 <canvas id="game-canvas" width="820" height="620"></canvas>
-<div id="tooltip"></div>
-
-<div id="info-panel"><span class="msg">点击空地块建造 &nbsp;|&nbsp; 点击建筑进行劳动 &nbsp;|&nbsp; 点击室内器物亦有效</span></div>
+<div id="tooltip"></div><div id="failure-msg"></div>
+<div id="info-panel"><span class="msg">点击空地块建造 &nbsp;|&nbsp; 点击建筑劳动 &nbsp;|&nbsp; 点击器物直接交互</span></div>
 <div id="log"></div>
-
-<div id="critique">
-  <em>「本游戏模拟现实劳动逻辑：你的每次点击产生真实价值，游戏内没有虚拟货币体系让你陷入资本陷阱。」</em><br>
-  技术提升不会减少你的劳动时间 —— 它只会提高资本对剩余价值的榨取效率。
-</div>
-
+<div id="critique"><em>「本游戏模拟现实劳动逻辑：你的每次点击产生真实价值，游戏内没有虚拟货币体系让你陷入资本陷阱。」</em><br>技术提升不会减少你的劳动时间 —— 它只会提高资本对剩余价值的榨取效率。</div>
 <button id="restart-btn">重新开始</button>
-<div class="hint">快捷键：1-5建造 &nbsp;|&nbsp; Enter/空格工作 &nbsp;|&nbsp; Delete拆除 &nbsp;|&nbsp; 点击室内器物可直接交互</div>
+<div class="hint">快捷键：1-5建造 &nbsp;|&nbsp; Enter/空格工作 &nbsp;|&nbsp; Delete拆除</div>
 
 <script>
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  垂直纪元·劳工的诅咒  v2.0                                      ║
-// ║  架构：CONFIG → DATA → STATE → EVENTS → LOGIC → RENDER → UI   ║
+// ║  垂直纪元·劳工的诅咒  v3.0                                     ║
+// ║  师 Stellaris 七法：DEFINES分层 / LAYOUT统位 / 建筑限约         ║
+// ║  经济范畴承袭 / 规则引擎 / 生命周期钩子 / 修饰符叠算            ║
 // ╚══════════════════════════════════════════════════════════════════╝
 
-// ── [CONFIG] 所有可调参数，改此对象即改游戏规则 ──
-const CONFIG = {
-  tickInterval: 2000,
-  baseLaborDecay: 1,
-  maintLaborPerBuilding: 0.5,
-  demolishRefundRatio: 0.5,
-  gridCols: 6,
-  gridRows: 6,
-  startResources: { labor: 80, food: 50, wood: 30, stone: 25 },
-  saveKey: 'vertical_epoch_save_v2',
-  workerAnimDuration: 500, // 工人劳作动画时长(ms)
+// ═════════════════════════════════════════════════════════════
+//  法一：DEFINES — 万象皆数，聚于一册，分层而治
+// ═════════════════════════════════════════════════════════════
 
+const DEF = {
+  // 经济节
+  economy: {
+    tickInterval: 2000,
+    baseLaborDecay: 1,
+    maintLaborPerBuilding: 0.5,
+    demolishRefundRatio: 0.5,
+    restLaborGain: 1,
+    startResources: { labor: 80, food: 50, wood: 30, stone: 25 },
+  },
+  // 网格节
+  grid: { cols: 6, rows: 6 },
+  // 工人节
+  workers: { animDuration: 500 },
+  // 存档节
+  save: { key: 'vertical_epoch_save_v3' },
+  // 建筑定义 — 仿 Stellaris building 字段全集
   buildingDefs: {
     housing: {
       id:'housing', name:'住宅', icon:'\u{1F3E0}',
+      category:'housing_service',
       cost:{ labor:10, wood:10, stone:5 },
       work:null,
       passive:{ labor:2, food:-1 },
+      limits:{ perFloor:3, total:9 },
+      prerequisites:null,
       roomColor:'#1a1a14', accent:'#6a6a2e',
-      desc:'提供劳动力再生，消耗食物'
+      desc:'提供劳动力再生，消耗食物',
+      onBuilt:null,
+      onDestroy:null,
     },
     farm: {
       id:'farm', name:'农场', icon:'\u{1F33E}',
+      category:'food_production',
       cost:{ labor:5, wood:5 },
       work:{ cost:{ labor:3 }, produce:{ food:5 } },
       passive:null,
+      limits:{ perFloor:3, total:9 },
+      prerequisites:{ buildings:{ housing:1 } },
       roomColor:'#141e0e', accent:'#4a6a2a',
-      desc:'消耗劳动力生产食物'
+      desc:'消耗劳动力生产食物。需先有住宅。',
+      onBuilt:null,
+      onDestroy:null,
     },
     lumber: {
       id:'lumber', name:'伐木场', icon:'\u{1FAB5}',
+      category:'wood_production',
       cost:{ labor:5, stone:5 },
       work:{ cost:{ labor:3 }, produce:{ wood:5 } },
       passive:null,
+      limits:{ perFloor:3, total:9 },
+      prerequisites:{ buildings:{ housing:1 } },
       roomColor:'#1e140a', accent:'#8a5a2a',
-      desc:'消耗劳动力生产木材'
+      desc:'消耗劳动力生产木材。需先有住宅。',
+      onBuilt:null,
+      onDestroy:null,
     },
     mine: {
       id:'mine', name:'矿场', icon:'\u{26CF}\u{FE0F}',
+      category:'stone_production',
       cost:{ labor:5, wood:5 },
       work:{ cost:{ labor:3 }, produce:{ stone:5 } },
       passive:null,
+      limits:{ perFloor:3, total:9 },
+      prerequisites:{ buildings:{ housing:1, lumber:1 } },
       roomColor:'#141414', accent:'#606060',
-      desc:'消耗劳动力生产石材'
+      desc:'消耗劳动力生产石材。需有伐木场（以制矿架）。',
+      onBuilt:null,
+      onDestroy:null,
     },
     market: {
       id:'market', name:'市场', icon:'\u{1F3EA}',
+      category:'trade_service',
       cost:{ labor:15, wood:15, stone:10 },
       work:{ cost:{ labor:2 }, trade:true },
       passive:null,
+      limits:{ perFloor:1, total:2 },
+      prerequisites:{ buildings:{ housing:2, farm:1 } },
       roomColor:'#181810', accent:'#535624',
-      desc:'消耗劳动力进行资源交易'
+      desc:'消耗劳动力交易资源。需有2住宅与农场。',
+      onBuilt:function(row,col){ log('市场开业 — 工人可将劳力兑换为所需物资'); },
+      onDestroy:function(row,col){ log('市场关闭 — 资源流通受阻'); },
     }
   }
 };
+const BLD_LIST = Object.values(DEF.buildingDefs);
 
-// ── [PALETTE] 调色板 ──
-const P = {
+// ═════════════════════════════════════════════════════════════
+//  法二：LAYOUT — 布局统位，仿 positionType
+// ═════════════════════════════════════════════════════════════
+
+const LAY = {
+  canvas: { w:820, h:620 },
+  elevator: { x:52, y:100, w:38, xInner:4, trackTop:100, trackH:396 },
+  grid: { x:100, y:100, cellW:100, cellH:66 },
+  beams: { h:7, v:4 },
+  ground: { y:520 },
+  // 格子内相对坐标 — 为各建筑定义器物位
+  furniture: {
+    housing: [
+      { n:'双层床', x:6,y:20,w:42,h:32, action:'rest', draw:'bunkBed' },
+      { n:'桌', x:52,y:34,w:20,h:14, draw:'table' },
+      { n:'窗', x:80,y:8,w:14,h:16, draw:'window' },
+      { n:'台灯', x:60,y:28,w:8,h:10, draw:'lamp' },
+    ],
+    farm: [
+      { n:'种植架①', x:8,y:12,w:28,h:32, action:'work', draw:'plantShelf' },
+      { n:'种植架②', x:38,y:12,w:28,h:32, action:'work', draw:'plantShelf' },
+      { n:'种植架③', x:68,y:12,w:24,h:32, action:'work', draw:'plantShelf' },
+      { n:'水管', x:92,y:8,w:4,h:42, draw:'pipe' },
+      { n:'储水箱', x:80,y:44,w:16,h:14, action:'info', draw:'waterTank' },
+    ],
+    lumber: [
+      { n:'原木堆①', x:6,y:28,w:22,h:18, draw:'logPile' },
+      { n:'原木堆②', x:30,y:24,w:22,h:22, draw:'logPile' },
+      { n:'锯台', x:58,y:26,w:28,h:20, action:'work', draw:'sawTable' },
+      { n:'木屑堆', x:80,y:40,w:14,h:10, draw:'sawdust' },
+    ],
+    mine: [
+      { n:'矿车', x:12,y:30,w:24,h:16, draw:'mineCart' },
+      { n:'轨道', x:6,y:46,w:42,h:6, draw:'rail' },
+      { n:'岩壁', x:60,y:4,w:36,h:48, draw:'rockFace' },
+      { n:'镐', x:50,y:36,w:14,h:10, action:'work', draw:'pickaxe' },
+    ],
+    market: [
+      { n:'柜台', x:10,y:30,w:46,h:18, action:'work', draw:'counter' },
+      { n:'货架左', x:62,y:14,w:14,h:24, draw:'shelf' },
+      { n:'货架右', x:80,y:14,w:14,h:24, draw:'shelf' },
+      { n:'招牌', x:30,y:4,w:32,h:10, action:'info', draw:'sign' },
+    ],
+  }
+};
+
+// ═════════════════════════════════════════════════════════════
+//  法三：经济范畴 — 父子相承，修饰自生
+// ═════════════════════════════════════════════════════════════
+
+const ECO = {
+  housing_service:  { parent:null,       desc:'居住服务',  icon:'\u{1F3E0}' },
+  food_production:  { parent:'production', desc:'食物生产',  icon:'\u{1F33E}' },
+  wood_production:  { parent:'production', desc:'木材生产',  icon:'\u{1FAB5}' },
+  stone_production: { parent:'production', desc:'石材生产',  icon:'\u{26F0}' },
+  trade_service:    { parent:null,       desc:'交易服务',  icon:'\u{1F3EA}' },
+  production:       { parent:null,       desc:'生产部门',  icon:'\u{2692}' },
+};
+
+// 查某范畴之全祖先（含自身）
+function categoryAncestors(cat) {
+  var a = [cat];
+  var c = ECO[cat];
+  while (c && c.parent) { a.push(c.parent); c = ECO[c.parent]; }
+  return a;
+}
+
+// ═════════════════════════════════════════════════════════════
+//  法四：规则引擎 — 先验后行，败则有释
+// ═════════════════════════════════════════════════════════════
+
+function countBuildings(bldId) {
+  var n = 0;
+  for (var r = 0; r < DEF.grid.rows; r++)
+    for (var c = 0; c < DEF.grid.cols; c++)
+      if (state.grid[r][c] === bldId) n++;
+  return n;
+}
+
+function countOnFloor(bldId, row) {
+  var n = 0;
+  for (var c = 0; c < DEF.grid.cols; c++)
+    if (state.grid[row][c] === bldId) n++;
+  return n;
+}
+
+function checkPrerequisites(prereq) {
+  if (!prereq) return true;
+  if (prereq.buildings) {
+    for (var bId in prereq.buildings) {
+      if (countBuildings(bId) < prereq.buildings[bId]) return false;
+    }
+  }
+  return true;
+}
+
+function prereqMissingText(prereq) {
+  if (!prereq) return '';
+  var parts = [];
+  if (prereq.buildings) {
+    for (var bId in prereq.buildings) {
+      var bld = DEF.buildingDefs[bId];
+      var need = prereq.buildings[bId];
+      var have = countBuildings(bId);
+      if (have < need) parts.push('需' + bld.name + '×' + need + '(现有' + have + ')');
+    }
+  }
+  return parts.join('；');
+}
+
+// 规则校验返回 null（通过）或 failText 字符串（失败）
+var RULES = {
+  canBuild: function(bldId, row, col) {
+    var bld = DEF.buildingDefs[bldId];
+    if (!bld) return '未知建筑类型';
+    if (state.grid[row][col] !== null) return '此格已有建筑';
+    if (!canAfford(bld.cost)) return '资源不足';
+    if (bld.limits) {
+      if (bld.limits.perFloor && countOnFloor(bldId, row) >= bld.limits.perFloor)
+        return '此层' + bld.name + '已达上限(' + bld.limits.perFloor + '座)';
+      if (bld.limits.total && countBuildings(bldId) >= bld.limits.total)
+        return bld.name + '全局上限已满(' + bld.limits.total + '座)';
+    }
+    if (bld.prerequisites && !checkPrerequisites(bld.prerequisites))
+      return prereqMissingText(bld.prerequisites);
+    return null; // 通过
+  },
+  canWork: function(row, col) {
+    var bldId = state.grid[row][col];
+    if (!bldId) return '此格无建筑';
+    var bld = DEF.buildingDefs[bldId];
+    if (!bld || !bld.work) return bld ? (bld.name + '无主动工作') : '未知建筑';
+    if (bld.work.trade) return null; // 交易另有校验
+    if (!canAfford(bld.work.cost)) return '劳动力不足';
+    return null;
+  },
+  canDemolish: function(row, col) {
+    if (!state.grid[row][col]) return '此格无建筑可拆';
+    return null;
+  },
+  canRest: function(row, col) {
+    if (state.grid[row][col] !== 'housing') return '仅住宅可休息';
+    return null;
+  }
+};
+
+function showFailure(msg) {
+  var el = document.getElementById('failure-msg');
+  if (!msg) { el.style.display = 'none'; return; }
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.opacity = '1';
+  el.style.left = '50%';
+  el.style.top = '58%';
+  setTimeout(function(){ el.style.opacity = '0'; setTimeout(function(){ el.style.display = 'none'; }, 800); }, 1200);
+}
+
+// ═════════════════════════════════════════════════════════════
+//  法五：修饰符 — 叠算倍率，范畴驱动
+// ═════════════════════════════════════════════════════════════
+
+var modifiers = {
+  global: { laborMult:0, foodMult:0, woodMult:0, stoneMult:0 },
+  // perCategory 动态计算（不存储，每次查询时遍历建筑）
+};
+
+// 获取某资源总倍率（全局 + 范畴）
+function getResourceMult(resType, bldId) {
+  var bld = DEF.buildingDefs[bldId];
+  var mult = 1 + (modifiers.global[resType + 'Mult'] || 0);
+  // 范畴加成：每有一座同范畴建筑，产出 +2%（体现集群效应 — 但也因此消耗更多劳动力）
+  if (bld && bld.category) {
+    var ancestors = categoryAncestors(bld.category);
+    var catBonus = 0;
+    for (var r = 0; r < DEF.grid.rows; r++) {
+      for (var c = 0; c < DEF.grid.cols; c++) {
+        var ob = state.grid[r][c];
+        if (!ob) continue;
+        var obDef = DEF.buildingDefs[ob];
+        if (obDef && obDef.category) {
+          var obAnc = categoryAncestors(obDef.category);
+          for (var ai = 0; ai < ancestors.length; ai++) {
+            if (obAnc.indexOf(ancestors[ai]) >= 0) { catBonus += 0.02; break; }
+          }
+        }
+      }
+    }
+    mult += catBonus;
+  }
+  return mult;
+}
+
+// 获取建筑之有效产出（考虑范畴倍率）
+function getEffectiveProduce(bldId) {
+  var bld = DEF.buildingDefs[bldId];
+  if (!bld || !bld.work || bld.work.trade) return null;
+  var prod = {};
+  for (var k in bld.work.produce) {
+    var mult = getResourceMult(k, bldId);
+    prod[k] = Math.max(1, Math.floor(bld.work.produce[k] * mult));
+  }
+  return prod;
+}
+
+// 更新全局修饰符（随游戏进程动态变化）
+function updateGlobalModifiers() {
+  var totalBld = 0;
+  for (var r = 0; r < DEF.grid.rows; r++)
+    for (var c = 0; c < DEF.grid.cols; c++)
+      if (state.grid[r][c]) totalBld++;
+  // 规模效应：建筑越多，维护负担越重
+  modifiers.global.laborMult = 0;
+  modifiers.global.foodMult = totalBld >= 8 ? 0.05 : 0;
+  modifiers.global.woodMult = totalBld >= 10 ? 0.05 : 0;
+  modifiers.global.stoneMult = totalBld >= 10 ? 0.05 : 0;
+}
+
+// ═════════════════════════════════════════════════════════════
+//  法六：生命周期钩子 — 建造/拆除皆有回响
+// ═════════════════════════════════════════════════════════════
+
+function fireOnBuilt(bldId, row, col) {
+  var bld = DEF.buildingDefs[bldId];
+  if (bld && typeof bld.onBuilt === 'function') bld.onBuilt(row, col);
+  Events.emit('building:built', { id:bldId, row:row, col:col });
+}
+
+function fireOnDestroy(bldId, row, col) {
+  var bld = DEF.buildingDefs[bldId];
+  if (bld && typeof bld.onDestroy === 'function') bld.onDestroy(row, col);
+  Events.emit('building:destroyed', { id:bldId, row:row, col:col });
+}
+
+// ═════════════════════════════════════════════════════════════
+//  法七：事件总线（保留并增强）
+// ═════════════════════════════════════════════════════════════
+
+var Events = { _ls:{} };
+Events.on = function(evt, fn) { (this._ls[evt]=this._ls[evt]||[]).push(fn); };
+Events.emit = function(evt, data) { (this._ls[evt]||[]).forEach(function(f){ f(data); }); };
+
+// 监听范畴加成变化，自动更新 UI
+Events.on('building:built', function(){ updateGlobalModifiers(); });
+Events.on('building:destroyed', function(){ updateGlobalModifiers(); });
+
+// ═════════════════════════════════════════════════════════════
+//  状态层
+// ═════════════════════════════════════════════════════════════
+
+var state = {
+  grid: [],
+  res: { labor:0, food:0, wood:0, stone:0 },
+  selectedCell: null,
+  hoveredCell: null,
+  hoveredFurniture: null,
+  tickCount: 0,
+  logMessages: [],
+  elevatorTarget: 0,
+  elevatorPos: 0,
+  workerStates: {},  // "row,col" → { anim:'idle'|'working', until:ts }
+};
+
+function initState() {
+  state.grid = Array.from({ length: DEF.grid.rows }, function(){ return Array(DEF.grid.cols).fill(null); });
+  var s = DEF.economy.startResources;
+  state.res = { labor:s.labor, food:s.food, wood:s.wood, stone:s.stone };
+  state.selectedCell = null;
+  state.hoveredCell = null;
+  state.hoveredFurniture = null;
+  state.tickCount = 0;
+  state.logMessages = [];
+  state.elevatorTarget = 0;
+  state.elevatorPos = 0;
+  state.workerStates = {};
+  updateGlobalModifiers();
+}
+
+function saveGame() {
+  try {
+    localStorage.setItem(DEF.save.key, JSON.stringify({
+      grid: state.grid, res: state.res, tickCount: state.tickCount, ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+function loadGame() {
+  try {
+    var raw = localStorage.getItem(DEF.save.key);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    state.grid = data.grid;
+    state.res = data.res;
+    state.tickCount = data.tickCount || 0;
+    updateGlobalModifiers();
+    return true;
+  } catch(e) { return false; }
+}
+
+function clearSave() {
+  try { localStorage.removeItem(DEF.save.key); } catch(e) {}
+}
+
+// ═════════════════════════════════════════════════════════════
+//  Canvas / 辅助
+// ═════════════════════════════════════════════════════════════
+
+var canvas = document.getElementById('game-canvas');
+var ctx = canvas.getContext('2d');
+var W = LAY.canvas.w, H = LAY.canvas.h;
+var GX = LAY.grid.x, GY = LAY.grid.y;
+var CW = LAY.grid.cellW, CH = LAY.grid.cellH;
+var BH = LAY.beams.h, BV = LAY.beams.v;
+var GW = DEF.grid.cols * CW, GH = DEF.grid.rows * CH;
+
+function addRes(k, a) { state.res[k] = Math.max(0, (state.res[k]||0) + a); }
+function canAfford(costs) { for (var k in costs) { if ((state.res[k]||0) < costs[k]) return false; } return true; }
+function payCost(costs) { for (var k in costs) state.res[k] -= costs[k]; }
+function hexA(h, a) { var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16); return 'rgba('+r+','+g+','+b+','+a+')'; }
+function bldById(id) { return DEF.buildingDefs[id] || null; }
+
+function log(msg) {
+  state.logMessages.unshift(msg);
+  if (state.logMessages.length > 5) state.logMessages.pop();
+  document.getElementById('log').innerHTML = state.logMessages.join('<br>');
+}
+
+// ═════════════════════════════════════════════════════════════
+//  渲染层 — 背景
+// ═════════════════════════════════════════════════════════════
+
+var P = {
   earth_top:'#1a1410', earth_mid:'#14100c', earth_deep:'#0e0a08',
-  rock_vein:'#1e1a14', rock_dark:'#181410',
-  ore_glimmer:'#797962',
+  rock_vein:'#1e1a14', ore_glimmer:'#797962',
   concrete:'#2a2822', concrete_dark:'#1e1c18',
   steel:'#3a3832', steel_dark:'#282620',
   beam_h:'#2a2822', beam_v:'#24221e',
   grid_bg:'#0e0e0c',
   highlight:'#797962', highlight2:'#9f9f9f',
-  accent_warm:'#535624',
-  shadow:'#0a0806',
+  accent_warm:'#535624', shadow:'#0a0806',
   worker_body:'#8a8a7a', worker_head:'#c8c4b0',
   bed_frame:'#3a3028', bed_sheet:'#4a3a2a',
   plant_green:'#3a5a1a', shelf_brown:'#3a2a18',
@@ -166,134 +501,8 @@ const P = {
   elevator_car:'#3a3830', elevator_cable:'#5a5850',
 };
 
-// ── [DATA] 家具定义（相对格子坐标） ──
-const FURNITURE = {
-  housing: [
-    { name:'双层床', x:6, y:20, w:42, h:32, action:'rest', draw:'bunkBed' },
-    { name:'桌', x:52, y:34, w:20, h:14, action:null, draw:'table' },
-    { name:'窗', x:80, y:8, w:14, h:16, action:null, draw:'window' },
-    { name:'台灯', x:60, y:28, w:8, h:10, action:null, draw:'lamp' },
-  ],
-  farm: [
-    { name:'种植架①', x:8, y:12, w:28, h:32, action:'work', draw:'plantShelf' },
-    { name:'种植架②', x:38, y:12, w:28, h:32, action:'work', draw:'plantShelf' },
-    { name:'种植架③', x:68, y:12, w:24, h:32, action:'work', draw:'plantShelf' },
-    { name:'水管', x:92, y:8, w:4, h:42, action:null, draw:'pipe' },
-    { name:'储水箱', x:80, y:44, w:16, h:14, action:'info', draw:'waterTank' },
-  ],
-  lumber: [
-    { name:'原木堆①', x:6, y:28, w:22, h:18, action:null, draw:'logPile' },
-    { name:'原木堆②', x:30, y:24, w:22, h:22, action:null, draw:'logPile' },
-    { name:'锯台', x:58, y:26, w:28, h:20, action:'work', draw:'sawTable' },
-    { name:'木屑堆', x:80, y:40, w:14, h:10, action:null, draw:'sawdust' },
-  ],
-  mine: [
-    { name:'矿车', x:12, y:30, w:24, h:16, action:null, draw:'mineCart' },
-    { name:'轨道', x:6, y:46, w:42, h:6, action:null, draw:'rail' },
-    { name:'岩壁', x:60, y:4, w:36, h:48, action:null, draw:'rockFace' },
-    { name:'镐', x:50, y:36, w:14, h:10, action:'work', draw:'pickaxe' },
-  ],
-  market: [
-    { name:'柜台', x:10, y:30, w:46, h:18, action:'work', draw:'counter' },
-    { name:'货架左', x:62, y:14, w:14, h:24, action:null, draw:'shelf' },
-    { name:'货架右', x:80, y:14, w:14, h:24, action:null, draw:'shelf' },
-    { name:'招牌', x:30, y:4, w:32, h:10, action:'info', draw:'sign' },
-  ],
-  empty: []
-};
-
-// ── [EVENTS] 事件总线 ──
-const Events = { _ls:{} };
-Events.on = function(evt, fn) { (this._ls[evt] = this._ls[evt] || []).push(fn); };
-Events.emit = function(evt, data) { (this._ls[evt] || []).forEach(function(f){ f(data); }); };
-
-// ── [STATE] 游戏状态 + 存档 ──
-const state = {
-  grid: [],
-  res: { labor:0, food:0, wood:0, stone:0 },
-  selectedCell: null,
-  hoveredCell: null,
-  hoveredFurniture: null,
-  tickCount: 0,
-  logMessages: [],
-  elevatorTarget: 0,  // 电梯目标楼层 (0=1F, 5=6F)
-  elevatorPos: 0,     // 电梯当前位置 (过渡动画用)
-  workerStates: {},   // key: "row,col" → { anim: 'idle'|'working'|'resting', until: timestamp }
-};
-
-function initState() {
-  state.grid = Array.from({ length: CONFIG.gridRows }, () => Array(CONFIG.gridCols).fill(null));
-  const s = CONFIG.startResources;
-  state.res = { labor: s.labor, food: s.food, wood: s.wood, stone: s.stone };
-  state.selectedCell = null;
-  state.hoveredCell = null;
-  state.hoveredFurniture = null;
-  state.tickCount = 0;
-  state.logMessages = [];
-  state.elevatorTarget = 0;
-  state.elevatorPos = 0;
-  state.workerStates = {};
-}
-
-function saveGame() {
-  const data = {
-    grid: state.grid,
-    res: state.res,
-    tickCount: state.tickCount,
-    ts: Date.now()
-  };
-  try { localStorage.setItem(CONFIG.saveKey, JSON.stringify(data)); } catch(e) {}
-}
-
-function loadGame() {
-  try {
-    const raw = localStorage.getItem(CONFIG.saveKey);
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    state.grid = data.grid;
-    state.res = data.res;
-    state.tickCount = data.tickCount || 0;
-    return true;
-  } catch(e) { return false; }
-}
-
-function clearSave() {
-  try { localStorage.removeItem(CONFIG.saveKey); } catch(e) {}
-}
-
-// ── Canvas 常量 ──
-const canvas = document.getElementById('game-canvas');
-const ctx = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
-const GRID_X = 100, GRID_Y = 100;
-const CELL_W = 100, CELL_H = 66;
-const GRID_W = CONFIG.gridCols * CELL_W;
-const GRID_H = CONFIG.gridRows * CELL_H;
-const ELEV_X = 52, ELEV_W = 38;
-const BEAM_H = 7, BEAM_V = 4;
-const GROUND_Y = GRID_Y + GRID_H + 24;
-
-// ── 辅助 ──
-function addRes(k, a) { state.res[k] = Math.max(0, state.res[k] + a); }
-function canAfford(costs) { for (var k in costs) { if ((state.res[k]||0) < costs[k]) return false; } return true; }
-function payCost(costs) { for (var k in costs) state.res[k] -= costs[k]; }
-function hexA(h, a) { var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16); return 'rgba('+r+','+g+','+b+','+a+')'; }
-function bldById(id) { for (var k in CONFIG.buildingDefs) { if (CONFIG.buildingDefs[k].id===id) return CONFIG.buildingDefs[k]; } return null; }
-
-function log(msg) {
-  state.logMessages.unshift(msg);
-  if (state.logMessages.length > 5) state.logMessages.pop();
-  document.getElementById('log').innerHTML = state.logMessages.join('<br>');
-  Events.emit('log', msg);
-}
-
-// ═══════════════════════════════════════════════════════
-//  RENDER: 背景 — 地下岩层
-// ═══════════════════════════════════════════════════════
-
 function drawUnderground() {
-  // 岩土渐变
-  var grad = ctx.createLinearGradient(0, 0, 0, GROUND_Y + 80);
+  var grad = ctx.createLinearGradient(0, 0, 0, LAY.ground.y + 80);
   grad.addColorStop(0, P.earth_top);
   grad.addColorStop(0.15, P.earth_top);
   grad.addColorStop(0.4, P.earth_mid);
@@ -302,48 +511,39 @@ function drawUnderground() {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // 岩脉纹理（确定性伪随机，用 tickCount 作为种子保证一致性）
   ctx.save();
   for (var i = 0; i < 45; i++) {
     var vx = (i * 193 + 77) % W;
-    var vy = 40 + (i * 251 + 131) % (GROUND_Y - 100);
-    var vw = 14 + (i % 20) * 2.5;
-    var vh = 2 + (i % 6) * 1.5;
+    var vy = 40 + (i * 251 + 131) % (LAY.ground.y - 100);
     ctx.fillStyle = hexA(P.rock_vein, 0.15 + (i % 5) * 0.08);
-    ctx.fillRect(vx, vy, vw, vh);
+    ctx.fillRect(vx, vy, 14 + (i % 20) * 2.5, 2 + (i % 6) * 1.5);
   }
-  // 矿石微光
   for (var j = 0; j < 30; j++) {
     var ox = (j * 317 + 53) % W;
-    var oy = 60 + (j * 197 + 89) % (GROUND_Y - 80);
-    var or_ = 0.6 + (j % 7) * 0.3;
+    var oy = 60 + (j * 197 + 89) % (LAY.ground.y - 80);
     ctx.fillStyle = hexA(P.ore_glimmer, 0.25 + (j % 4) * 0.12);
     ctx.beginPath();
-    ctx.arc(ox, oy, or_, 0, Math.PI * 2);
+    ctx.arc(ox, oy, 0.6 + (j % 7) * 0.3, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.restore();
 }
 
-// ── 地面与雾气 ──
 function drawGround() {
-  var grad = ctx.createLinearGradient(0, GROUND_Y, 0, H);
+  var grad = ctx.createLinearGradient(0, LAY.ground.y, 0, H);
   grad.addColorStop(0, P.concrete_dark);
   grad.addColorStop(0.06, P.shadow);
   grad.addColorStop(1, '#000000');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
-
-  // 地面线
+  ctx.fillRect(0, LAY.ground.y, W, H - LAY.ground.y);
   ctx.strokeStyle = P.concrete;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(0, GROUND_Y);
-  ctx.lineTo(W, GROUND_Y);
+  ctx.moveTo(0, LAY.ground.y);
+  ctx.lineTo(W, LAY.ground.y);
   ctx.stroke();
 
-  // 雾气
-  var fogGrad = ctx.createLinearGradient(0, GROUND_Y - 120, 0, H);
+  var fogGrad = ctx.createLinearGradient(0, LAY.ground.y - 120, 0, H);
   fogGrad.addColorStop(0, 'rgba(0,0,0,0)');
   fogGrad.addColorStop(0.35, hexA(P.earth_deep, 0.15));
   fogGrad.addColorStop(0.7, hexA(P.shadow, 0.5));
@@ -352,137 +552,112 @@ function drawGround() {
   ctx.fillRect(0, 0, W, H);
 }
 
-// ═══════════════════════════════════════════════════════
-//  RENDER: 结构框架 — 厚梁柱 + 电梯井
-// ═══════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════
+//  渲染 — 结构框架（厚梁柱 + 电梯井）
+// ═════════════════════════════════════════════════════════════
 
 function drawStructure() {
-  // 建筑主体外框（砼色厚边）
-  var fx = GRID_X - BEAM_V, fy = GRID_Y - BEAM_H;
-  var fw = GRID_W + BEAM_V * 2, fh = GRID_H + BEAM_H * 2;
+  var fx = GX - BV, fy = GY - BH;
+  var fw = GW + BV * 2, fh = GH + BH * 2;
 
-  // 外围砼框架
+  // 砼框架
   ctx.fillStyle = P.concrete;
-  // 上梁
-  ctx.fillRect(fx, fy, fw, BEAM_H);
-  // 下梁
-  ctx.fillRect(fx, fy + fh - BEAM_H, fw, BEAM_H);
-  // 左柱
-  ctx.fillRect(fx, fy, BEAM_V, fh);
-  // 右柱
-  ctx.fillRect(fx + fw - BEAM_V, fy, BEAM_V, fh);
+  ctx.fillRect(fx, fy, fw, BH);
+  ctx.fillRect(fx, fy + fh - BH, fw, BH);
+  ctx.fillRect(fx, fy, BV, fh);
+  ctx.fillRect(fx + fw - BV, fy, BV, fh);
 
-  // 砼纹理（细线模拟模板痕迹）
+  // 砼纹理
   ctx.strokeStyle = hexA(P.concrete_dark, 0.3);
   ctx.lineWidth = 0.5;
   for (var i = 0; i < fw; i += 12) {
-    ctx.beginPath();
-    ctx.moveTo(fx + i, fy);
-    ctx.lineTo(fx + i, fy + BEAM_H);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(fx + i, fy + fh - BEAM_H);
-    ctx.lineTo(fx + i, fy + fh);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx + i, fy); ctx.lineTo(fx + i, fy + BH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(fx + i, fy + fh - BH); ctx.lineTo(fx + i, fy + fh); ctx.stroke();
   }
 
-  // 横梁（楼层分隔，粗梁）
+  // 横梁
   ctx.fillStyle = P.beam_h;
-  for (var row = 0; row <= CONFIG.gridRows; row++) {
-    var ly = GRID_Y + row * CELL_H - BEAM_H / 2;
-    ctx.fillRect(GRID_X, ly, GRID_W, BEAM_H);
+  for (var row = 0; row <= DEF.grid.rows; row++) {
+    var ly = GY + row * CH - BH / 2;
+    ctx.fillRect(GX, ly, GW, BH);
   }
 
-  // 竖柱（房间分隔，细于横梁）
+  // 竖柱
   ctx.fillStyle = P.beam_v;
-  for (var col = 0; col <= CONFIG.gridCols; col++) {
-    var lx = GRID_X + col * CELL_W - BEAM_V / 2;
-    ctx.fillRect(lx, GRID_Y, BEAM_V, GRID_H);
+  for (var col = 0; col <= DEF.grid.cols; col++) {
+    var lx = GX + col * CW - BV / 2;
+    ctx.fillRect(lx, GY, BV, GH);
   }
 
-  // 铆钉（梁柱交点）
+  // 铆钉
   ctx.fillStyle = P.steel;
-  for (var rr = 0; rr <= CONFIG.gridRows; rr++) {
-    for (var cc = 0; cc <= CONFIG.gridCols; cc++) {
-      var rx = GRID_X + cc * CELL_W - 3;
-      var ry = GRID_Y + rr * CELL_H - 3;
+  for (var rr = 0; rr <= DEF.grid.rows; rr++) {
+    for (var cc = 0; cc <= DEF.grid.cols; cc++) {
+      var rx = GX + cc * CW - 3, ry = GY + rr * CH - 3;
       ctx.fillRect(rx, ry, 6, 6);
-      // 铆钉高光
       ctx.fillStyle = hexA('#5a5850', 0.5);
       ctx.fillRect(rx + 1, ry + 1, 2, 2);
       ctx.fillStyle = P.steel;
     }
   }
 
-  // 楼层编号（左侧柱外）
+  // 楼层编号
   ctx.save();
   ctx.fillStyle = P.highlight;
   ctx.font = '10px "Microsoft YaHei"';
   ctx.textAlign = 'right';
-  for (var fr = 0; fr < CONFIG.gridRows; fr++) {
-    var fn = CONFIG.gridRows - fr;
-    ctx.fillText(fn + 'F', GRID_X - BEAM_V - 8, GRID_Y + fr * CELL_H + CELL_H / 2 + 3);
+  for (var fr = 0; fr < DEF.grid.rows; fr++) {
+    ctx.fillText((DEF.grid.rows - fr) + 'F', GX - BV - 8, GY + fr * CH + CH / 2 + 3);
   }
   ctx.restore();
 
-  // 底部标注
+  // 标注
   ctx.fillStyle = P.highlight;
   ctx.font = '11px "Microsoft YaHei"';
   ctx.textAlign = 'center';
-  ctx.fillText('垂直纪元·建筑剖面', GRID_X + GRID_W / 2, GRID_Y + GRID_H + BEAM_H + 14);
+  ctx.fillText('垂直纪元·建筑剖面', GX + GW / 2, GY + GH + BH + 14);
 }
 
-// ── 电梯井 ──
 function drawElevator() {
-  var ex = ELEV_X, ey = GRID_Y;
-  var eh = GRID_H;
+  var ex = LAY.elevator.x, ey = LAY.elevator.trackTop;
+  var eh = LAY.elevator.trackH;
 
-  // 电梯井道
   ctx.fillStyle = '#0c0c0a';
-  ctx.fillRect(ex, ey, ELEV_W, eh);
-
-  // 井道边框
+  ctx.fillRect(ex, ey, LAY.elevator.w, eh);
   ctx.strokeStyle = P.steel_dark;
   ctx.lineWidth = 2;
-  ctx.strokeRect(ex, ey, ELEV_W, eh);
+  ctx.strokeRect(ex, ey, LAY.elevator.w, eh);
 
-  // 竖轨（左右各一）
   ctx.strokeStyle = P.steel;
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(ex + 7, ey);
-  ctx.lineTo(ex + 7, ey + eh);
-  ctx.moveTo(ex + ELEV_W - 7, ey);
-  ctx.lineTo(ex + ELEV_W - 7, ey + eh);
+  ctx.moveTo(ex + 7, ey); ctx.lineTo(ex + 7, ey + eh);
+  ctx.moveTo(ex + LAY.elevator.w - 7, ey); ctx.lineTo(ex + LAY.elevator.w - 7, ey + eh);
   ctx.stroke();
 
-  // 钢索
   ctx.strokeStyle = P.elevator_cable;
   ctx.lineWidth = 0.8;
   ctx.beginPath();
-  ctx.moveTo(ex + ELEV_W / 2, ey);
-  ctx.lineTo(ex + ELEV_W / 2, ey + eh);
+  ctx.moveTo(ex + LAY.elevator.w / 2, ey);
+  ctx.lineTo(ex + LAY.elevator.w / 2, ey + eh);
   ctx.stroke();
 
-  // 更新电梯位置（平滑过渡）
-  var targetY = GRID_Y + (CONFIG.gridRows - 1 - state.elevatorTarget) * CELL_H + CELL_H / 2 - 16;
+  // 轿厢平滑过渡
+  var targetY = GY + (DEF.grid.rows - 1 - state.elevatorTarget) * CH + CH / 2 - 16;
   var diff = targetY - state.elevatorPos;
   state.elevatorPos += diff * 0.25;
   if (Math.abs(diff) < 0.5) state.elevatorPos = targetY;
 
   var cy = state.elevatorPos;
-  var cx = ex + 4;
-  var cw = ELEV_W - 8;
+  var cx = ex + LAY.elevator.xInner;
+  var cw = LAY.elevator.w - 8;
   var ch = 20;
 
-  // 轿厢
   ctx.fillStyle = P.elevator_car;
   ctx.fillRect(cx, cy, cw, ch);
   ctx.strokeStyle = P.steel;
   ctx.lineWidth = 1;
   ctx.strokeRect(cx, cy, cw, ch);
-
-  // 轿厢门
   ctx.strokeStyle = P.steel_dark;
   ctx.lineWidth = 0.5;
   ctx.beginPath();
@@ -490,39 +665,35 @@ function drawElevator() {
   ctx.lineTo(cx + cw / 2, cy + ch - 2);
   ctx.stroke();
 
-  // 电梯标签
   ctx.fillStyle = P.highlight;
   ctx.font = '8px "Microsoft YaHei"';
   ctx.textAlign = 'center';
-  ctx.fillText('升', ex + ELEV_W / 2, ey - 6);
-  ctx.fillText('降', ex + ELEV_W / 2, ey + eh + 11);
+  ctx.fillText('升', ex + LAY.elevator.w / 2, ey - 6);
+  ctx.fillText('降', ex + LAY.elevator.w / 2, ey + eh + 11);
 }
 
-// ═══════════════════════════════════════════════════════
-//  RENDER: 房间内饰 + 家具
-// ═══════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════
+//  渲染 — 房间内饰
+// ═════════════════════════════════════════════════════════════
 
 function drawCell(row, col) {
-  var x = GRID_X + col * CELL_W;
-  var y = GRID_Y + row * CELL_H;
+  var x = GX + col * CW, y = GY + row * CH;
   var bldId = state.grid[row][col];
   var bld = bldId ? bldById(bldId) : null;
 
   ctx.save();
   ctx.beginPath();
-  ctx.rect(x + 2, y + 2, CELL_W - 4, CELL_H - 4);
+  ctx.rect(x + 2, y + 2, CW - 4, CH - 4);
   ctx.clip();
 
-  // 底色
   ctx.fillStyle = bld ? bld.roomColor : '#0c0c0a';
-  ctx.fillRect(x, y, CELL_W, CELL_H);
+  ctx.fillRect(x, y, CW, CH);
 
   if (bld) {
-    drawRoomInterior(bld, x, y, CELL_W, CELL_H, row, col);
+    drawRoomInterior(bld, x, y, CW, CH, row, col);
   } else {
-    // 空房间：灰尘
     ctx.fillStyle = hexA('#1a1814', 0.2);
-    ctx.fillRect(x + CELL_W * 0.25, y + CELL_H * 0.45, CELL_W * 0.5, CELL_H * 0.12);
+    ctx.fillRect(x + CW * 0.25, y + CH * 0.45, CW * 0.5, CH * 0.12);
   }
 
   ctx.restore();
@@ -530,42 +701,34 @@ function drawCell(row, col) {
 
 function drawRoomInterior(bld, x, y, w, h, row, col) {
   var cx = x + w / 2, cy = y + h / 2;
-  var furn = FURNITURE[bld.id] || [];
 
   switch (bld.id) {
-
-    case 'housing':
-      // 暖光氛围
+    case 'housing': {
       var hg = ctx.createRadialGradient(cx + 14, cy - 4, w * 0.06, cx + 14, cy - 4, w * 0.45);
       hg.addColorStop(0, hexA(bld.accent, 0.3));
       hg.addColorStop(1, hexA(bld.accent, 0));
       ctx.fillStyle = hg;
       ctx.fillRect(x, y, w, h);
 
-      // 床（双层）
       var bx = x + 8, by = y + 22;
       ctx.fillStyle = P.bed_frame;
       ctx.fillRect(bx, by, 42, 28);
       ctx.fillStyle = P.bed_sheet;
-      ctx.fillRect(bx + 2, by + 3, 38, 10);   // 下铺
+      ctx.fillRect(bx + 2, by + 3, 38, 10);
       ctx.fillStyle = '#5a4a3a';
-      ctx.fillRect(bx + 2, by - 6, 38, 8);    // 上铺
-      // 床柱
+      ctx.fillRect(bx + 2, by - 6, 38, 8);
       ctx.fillStyle = P.bed_frame;
       ctx.fillRect(bx, by - 10, 3, 38);
       ctx.fillRect(bx + 39, by - 10, 3, 38);
-      // 枕头
       ctx.fillStyle = '#5a4a3a';
       ctx.fillRect(bx + 28, by + 4, 10, 7);
       ctx.fillRect(bx + 28, by - 5, 10, 6);
 
-      // 桌
       ctx.fillStyle = '#3a2a18';
-      ctx.fillRect(x + 56, y + 36, 22, 3);    // 桌面
-      ctx.fillRect(x + 58, y + 39, 3, 10);     // 左腿
-      ctx.fillRect(x + 73, y + 39, 3, 10);     // 右腿
+      ctx.fillRect(x + 56, y + 36, 22, 3);
+      ctx.fillRect(x + 58, y + 39, 3, 10);
+      ctx.fillRect(x + 73, y + 39, 3, 10);
 
-      // 窗（月光）
       ctx.fillStyle = hexA('#c8c8a0', 0.2);
       ctx.fillRect(x + 82, y + 8, 14, 16);
       ctx.strokeStyle = '#404040';
@@ -576,7 +739,6 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.moveTo(x + 82, y + 16); ctx.lineTo(x + 96, y + 16);
       ctx.stroke();
 
-      // 台灯
       ctx.fillStyle = hexA(bld.accent, 0.6);
       ctx.beginPath();
       ctx.arc(x + 64, y + 30, 4, 0, Math.PI * 2);
@@ -584,31 +746,24 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.fillStyle = '#5a5850';
       ctx.fillRect(x + 63, y + 34, 2, 6);
 
-      // 工人
-      drawWorkers(bld, x, y, w, h, row, col, 1);
+      drawWorkers(x, y, w, h, row, col, 1);
       break;
-
-    case 'farm':
-      // 生长灯光晕
+    }
+    case 'farm': {
       var fg = ctx.createRadialGradient(cx, cy - 12, w * 0.08, cx, cy - 12, w * 0.5);
       fg.addColorStop(0, hexA('#4a6a2a', 0.25));
       fg.addColorStop(1, hexA('#4a6a2a', 0));
       ctx.fillStyle = fg;
       ctx.fillRect(x, y, w, h);
 
-      // 三个种植架
       for (var s = 0; s < 3; s++) {
-        var sx = x + 10 + s * 32;
-        var sy = y + 14;
-        // 架体
+        var sx = x + 10 + s * 32, sy = y + 14;
         ctx.fillStyle = P.shelf_brown;
         ctx.fillRect(sx, sy, 26, 30);
         ctx.fillStyle = '#2a1a0a';
-        // 层板
         for (var sl = 0; sl < 3; sl++) {
           var sly = sy + 4 + sl * 9;
           ctx.fillRect(sx + 2, sly, 22, 2);
-          // 作物
           ctx.fillStyle = P.plant_green;
           for (var p = 0; p < 3; p++) {
             var px = sx + 6 + p * 7;
@@ -618,22 +773,19 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
         }
       }
 
-      // 水管
       ctx.strokeStyle = '#5a5850';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.moveTo(x + w - 4, y + 10);
       ctx.lineTo(x + w - 4, y + h - 6);
       ctx.stroke();
-      // 阀门
       ctx.fillStyle = '#888';
       ctx.fillRect(x + w - 7, y + 28, 6, 6);
 
-      drawWorkers(bld, x, y, w, h, row, col, 1);
+      drawWorkers(x, y, w, h, row, col, 1);
       break;
-
-    case 'lumber':
-      // 原木堆
+    }
+    case 'lumber': {
       var logColors = [P.log_bark, '#7a5a2a', P.log_bark, '#9a7a4a'];
       for (var li = 0; li < 4; li++) {
         ctx.fillStyle = logColors[li];
@@ -641,15 +793,12 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
         ctx.strokeStyle = '#4a3010';
         ctx.lineWidth = 0.4;
         ctx.strokeRect(x + 8 + li * 15, cy + 2 - li * 2, 17, 9);
-        // 年轮纹理
         ctx.fillStyle = hexA(logColors[li], 0.5);
         ctx.fillRect(x + 12 + li * 15, cy + 4 - li * 2, 3, 3);
       }
 
-      // 锯台
       ctx.fillStyle = '#4a3828';
       ctx.fillRect(x + 58, cy + 6, 28, 16);
-      // 锯片（圆）
       ctx.fillStyle = '#999';
       ctx.beginPath();
       ctx.arc(x + 72, cy - 2, 9, 0, Math.PI * 2);
@@ -658,7 +807,6 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.beginPath();
       ctx.arc(x + 72, cy - 2, 5, 0, Math.PI * 2);
       ctx.fill();
-      // 锯片齿
       ctx.strokeStyle = '#777';
       ctx.lineWidth = 0.5;
       for (var ti = 0; ti < 8; ti++) {
@@ -669,17 +817,15 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
         ctx.stroke();
       }
 
-      // 木屑堆
       ctx.fillStyle = '#6a5a3a';
       ctx.fillRect(x + 82, y + h - 14, 14, 8);
       ctx.fillStyle = '#7a6a4a';
       ctx.fillRect(x + 84, y + h - 16, 4, 4);
 
-      drawWorkers(bld, x, y, w, h, row, col, 1);
+      drawWorkers(x, y, w, h, row, col, 1);
       break;
-
-    case 'mine':
-      // 岩壁
+    }
+    case 'mine': {
       ctx.fillStyle = '#1e1e1e';
       for (var ri = 0; ri < 7; ri++) {
         var rrx = x + w - 38 + ri * 5;
@@ -687,13 +833,11 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
         ctx.fillRect(rrx, rry, 6, h * 0.45);
       }
 
-      // 矿道入口（暗色半圆）
       ctx.fillStyle = '#080808';
       ctx.beginPath();
       ctx.arc(cx - 6, cy + 1, 12, Math.PI, 0);
       ctx.fill();
 
-      // 轨道
       ctx.strokeStyle = '#666';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
@@ -701,18 +845,15 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.lineTo(cx - 6, cy + 8);
       ctx.lineTo(x + w - 6, cy + 11);
       ctx.stroke();
-      // 枕木
       ctx.fillStyle = P.cart_brown;
-      for (var ti = 0; ti < 5; ti++) {
-        ctx.fillRect(x + 8 + ti * 16, cy + 10, 6, 3);
+      for (var ti2 = 0; ti2 < 5; ti2++) {
+        ctx.fillRect(x + 8 + ti2 * 16, cy + 10, 6, 3);
       }
 
-      // 矿车
       ctx.fillStyle = P.ore_gray;
       ctx.fillRect(x + 12, cy + 4, 22, 10);
       ctx.fillStyle = '#888';
       ctx.fillRect(x + 13, cy + 5, 20, 3);
-      // 车轮
       ctx.fillStyle = '#444';
       ctx.beginPath();
       ctx.arc(x + 18, cy + 14, 3, 0, Math.PI * 2);
@@ -721,34 +862,29 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.arc(x + 28, cy + 14, 3, 0, Math.PI * 2);
       ctx.fill();
 
-      // 矿石亮点
       ctx.fillStyle = hexA(P.ore_glimmer, 0.5);
       ctx.beginPath(); ctx.arc(x + w - 14, y + 16, 2.5, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(x + w - 20, y + 28, 1.8, 0, Math.PI * 2); ctx.fill();
 
-      // 镐
       ctx.fillStyle = '#5a4a3a';
       ctx.fillRect(x + 54, y + 38, 14, 2.5);
       ctx.fillStyle = '#888';
       ctx.fillRect(x + 50, y + 36, 6, 7);
 
-      drawWorkers(bld, x, y, w, h, row, col, 1);
+      drawWorkers(x, y, w, h, row, col, 1);
       break;
-
-    case 'market':
-      // 暖色光照
+    }
+    case 'market': {
       var mg = ctx.createRadialGradient(cx, cy - 4, w * 0.1, cx, cy - 4, w * 0.5);
       mg.addColorStop(0, hexA(P.accent_warm, 0.28));
       mg.addColorStop(1, hexA(P.accent_warm, 0));
       ctx.fillStyle = mg;
       ctx.fillRect(x, y, w, h);
 
-      // 柜台
       ctx.fillStyle = P.counter_brown;
       ctx.fillRect(x + 12, cy + 6, 50, 16);
       ctx.fillStyle = '#5a4a38';
       ctx.fillRect(x + 12, cy + 6, 50, 3);
-      // 商品
       ctx.fillStyle = '#cc6644';
       ctx.beginPath(); ctx.arc(cx - 8, cy, 3, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#ddcc44';
@@ -756,7 +892,6 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.fillStyle = '#66aa44';
       ctx.beginPath(); ctx.arc(cx + 8, cy, 3, 0, Math.PI * 2); ctx.fill();
 
-      // 货架
       for (var sh = 0; sh < 2; sh++) {
         var shx = x + 62 + sh * 18;
         ctx.fillStyle = P.shelf_brown;
@@ -767,7 +902,6 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
         ctx.fillRect(shx + 1, y + 30, 12, 2);
       }
 
-      // 招牌
       ctx.fillStyle = hexA(P.highlight, 0.45);
       ctx.fillRect(cx - 16, y + 4, 32, 9);
       ctx.fillStyle = '#c8c8a0';
@@ -775,120 +909,116 @@ function drawRoomInterior(bld, x, y, w, h, row, col) {
       ctx.textAlign = 'center';
       ctx.fillText('交易', cx, y + 11);
 
-      drawWorkers(bld, x, y, w, h, row, col, 0);
+      drawWorkers(x, y, w, h, row, col, 0);
       break;
+    }
   }
 
-  // 建筑名标签
+  // 范畴标注
+  if (bld.category && ECO[bld.category]) {
+    ctx.fillStyle = hexA('#797962', 0.3);
+    ctx.font = '7px "Microsoft YaHei"';
+    ctx.textAlign = 'right';
+    ctx.fillText(ECO[bld.category].desc, x + w - 4, y + 8);
+  }
+
+  // 产出倍率（若有）
+  if (bld.work && !bld.work.trade && bld.work.produce) {
+    var pk = Object.keys(bld.work.produce)[0];
+    var mult = getResourceMult(pk, bld.id);
+    if (mult > 1) {
+      ctx.fillStyle = hexA('#c8c8a0', 0.5);
+      ctx.font = '7px "Microsoft YaHei"';
+      ctx.textAlign = 'right';
+      ctx.fillText('×' + mult.toFixed(1), x + w - 4, y + 16);
+    }
+  }
+
   ctx.fillStyle = hexA('#797962', 0.4);
   ctx.font = '8px "Microsoft YaHei"';
   ctx.textAlign = 'center';
   ctx.fillText(bld.name, cx, y + h - 3);
 }
 
-// ── 工人角色 ──
-function drawWorkers(bld, x, y, w, h, row, col, count) {
+// ── 工人 ──
+function drawWorkers(x, y, w, h, row, col, count) {
   if (count <= 0) return;
   var key = row + ',' + col;
-  var ws = state.workerStates[key] || { anim: 'idle', until: 0 };
-  var now = Date.now();
-  if (now > ws.until) ws.anim = 'idle';
+  var ws = state.workerStates[key] || { anim:'idle', until:0 };
+  if (Date.now() > ws.until) ws.anim = 'idle';
 
   for (var i = 0; i < count; i++) {
-    var wx = x + 54 + i * 16;
-    var wy = y + h - 18;
-
-    // 简易火柴人
+    var wx = x + 54 + i * 16, wy = y + h - 18;
     ctx.fillStyle = P.worker_body;
-    // 身体
     ctx.fillRect(wx + 2, wy + 4, 5, 7);
-    // 头
     ctx.fillStyle = P.worker_head;
     ctx.beginPath();
     ctx.arc(wx + 4.5, wy + 2, 3.5, 0, Math.PI * 2);
     ctx.fill();
-    // 腿
     ctx.strokeStyle = P.worker_body;
     ctx.lineWidth = 1;
     if (ws.anim === 'working') {
-      // 劳作：弯腰
       ctx.beginPath();
-      ctx.moveTo(wx + 3, wy + 11);
-      ctx.lineTo(wx + 1, wy + 15);
-      ctx.moveTo(wx + 6, wy + 11);
-      ctx.lineTo(wx + 8, wy + 15);
+      ctx.moveTo(wx + 3, wy + 11); ctx.lineTo(wx + 1, wy + 15);
+      ctx.moveTo(wx + 6, wy + 11); ctx.lineTo(wx + 8, wy + 15);
       ctx.stroke();
-      // 手前伸
       ctx.beginPath();
-      ctx.moveTo(wx + 2, wy + 6);
-      ctx.lineTo(wx - 3, wy + 4);
-      ctx.moveTo(wx + 7, wy + 6);
-      ctx.lineTo(wx + 12, wy + 4);
+      ctx.moveTo(wx + 2, wy + 6); ctx.lineTo(wx - 3, wy + 4);
+      ctx.moveTo(wx + 7, wy + 6); ctx.lineTo(wx + 12, wy + 4);
       ctx.stroke();
     } else {
-      // 站立
       ctx.beginPath();
-      ctx.moveTo(wx + 3, wy + 11);
-      ctx.lineTo(wx + 2, wy + 15);
-      ctx.moveTo(wx + 6, wy + 11);
-      ctx.lineTo(wx + 7, wy + 15);
+      ctx.moveTo(wx + 3, wy + 11); ctx.lineTo(wx + 2, wy + 15);
+      ctx.moveTo(wx + 6, wy + 11); ctx.lineTo(wx + 7, wy + 15);
       ctx.stroke();
     }
   }
 }
 
-// ── 家具/物体命中检测 ──
+// ── 交互命中检测 ──
 function getFurnitureAt(row, col, mx, my) {
   var bldId = state.grid[row][col];
   if (!bldId) return null;
   var bld = bldById(bldId);
-  var furn = FURNITURE[bld.id] || [];
-  var cx = GRID_X + col * CELL_W;
-  var cy = GRID_Y + row * CELL_H;
+  var furn = LAY.furniture[bld.id] || [];
+  var cx = GX + col * CW, cy = GY + row * CH;
   for (var i = 0; i < furn.length; i++) {
     var f = furn[i];
-    if (mx >= cx + f.x && mx <= cx + f.x + f.w &&
-        my >= cy + f.y && my <= cy + f.y + f.h) {
-      return { furniture: f, index: i, bld: bld, row: row, col: col };
+    if (mx >= cx + f.x && mx <= cx + f.x + f.w && my >= cy + f.y && my <= cy + f.y + f.h) {
+      return { furniture:f, index:i, bld:bld, row:row, col:col };
     }
   }
   return null;
 }
 
 function getCellAt(mx, my) {
-  var col = Math.floor((mx - GRID_X) / CELL_W);
-  var row = Math.floor((my - GRID_Y) / CELL_H);
-  if (col < 0 || col >= CONFIG.gridCols || row < 0 || row >= CONFIG.gridRows) return null;
-  return { row: row, col: col };
+  var col = Math.floor((mx - GX) / CW);
+  var row = Math.floor((my - GY) / CH);
+  if (col < 0 || col >= DEF.grid.cols || row < 0 || row >= DEF.grid.rows) return null;
+  return { row:row, col:col };
 }
 
-// ── 更新电梯目标楼层 ──
 function updateElevatorTarget() {
-  if (state.selectedCell) {
-    state.elevatorTarget = state.selectedCell.row;
-  }
+  if (state.selectedCell) state.elevatorTarget = state.selectedCell.row;
 }
 
-// ── 选择高亮 ──
+// ── 高亮 ──
 function drawSelectionHighlight() {
   if (!state.selectedCell) return;
-  var x = GRID_X + state.selectedCell.col * CELL_W;
-  var y = GRID_Y + state.selectedCell.row * CELL_H;
+  var x = GX + state.selectedCell.col * CW, y = GY + state.selectedCell.row * CH;
   ctx.save();
   ctx.strokeStyle = P.accent_warm;
   ctx.lineWidth = 2.5;
   ctx.shadowColor = P.accent_warm;
   ctx.shadowBlur = 10;
-  ctx.strokeRect(x + 2, y + 2, CELL_W - 4, CELL_H - 4);
+  ctx.strokeRect(x + 2, y + 2, CW - 4, CH - 4);
   ctx.restore();
 }
 
-// ── hover 家具高亮 ──
 function drawHoverHighlight() {
   if (!state.hoveredFurniture) return;
   var f = state.hoveredFurniture;
-  var x = GRID_X + f.col * CELL_W + f.furniture.x;
-  var y = GRID_Y + f.row * CELL_H + f.furniture.y;
+  var x = GX + f.col * CW + f.furniture.x, y = GY + f.row * CH + f.furniture.y;
   ctx.save();
   ctx.strokeStyle = '#c8c8a0';
   ctx.lineWidth = 1.5;
@@ -898,27 +1028,19 @@ function drawHoverHighlight() {
   ctx.restore();
 }
 
-// ═══════════════════════════════════════════════════════
-//  主渲染循环
-// ═══════════════════════════════════════════════════════
+// ── 主渲染 ──
 function render() {
   ctx.clearRect(0, 0, W, H);
   drawUnderground();
 
-  // 网格背景（结构框架内的暗色填充）
-  var fx = GRID_X - BEAM_V, fy = GRID_Y - BEAM_H;
-  var fw = GRID_W + BEAM_V * 2, fh = GRID_H + BEAM_H * 2;
+  var fx = GX - BV, fy = GY - BH;
   ctx.fillStyle = hexA(P.grid_bg, 0.5);
-  ctx.fillRect(fx + BEAM_V, fy + BEAM_H, fw - BEAM_V * 2, fh - BEAM_H * 2);
+  ctx.fillRect(fx + BV, fy + BH, GW, GH);
 
-  // 房间
-  for (var row = 0; row < CONFIG.gridRows; row++) {
-    for (var col = 0; col < CONFIG.gridCols; col++) {
+  for (var row = 0; row < DEF.grid.rows; row++)
+    for (var col = 0; col < DEF.grid.cols; col++)
       drawCell(row, col);
-    }
-  }
 
-  // 覆盖结构（梁柱在房间之上以遮边角）
   drawStructure();
   drawElevator();
   drawSelectionHighlight();
@@ -926,48 +1048,42 @@ function render() {
   drawGround();
 }
 
-// ═══════════════════════════════════════════════════════
-//  交互
-// ═══════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════
+//  交互层 — 规则校验驱动
+// ═════════════════════════════════════════════════════════════
 
 function handleClick(mx, my) {
-  // 先检测家具命中
+  // 先检器物
   var cell = getCellAt(mx, my);
   if (cell) {
     var hit = getFurnitureAt(cell.row, cell.col, mx, my);
     if (hit) {
-      // 点击了室内器物
       if (hit.furniture.action === 'work') {
-        // 点击生产型家具 → 触发工作
+        var fail = RULES.canWork(cell.row, cell.col);
+        if (fail) { showFailure(fail); return; }
         doWorkAt(cell.row, cell.col);
         return;
       } else if (hit.furniture.action === 'rest') {
-        // 点击床 → 休息（+1劳力）
+        var rf = RULES.canRest(cell.row, cell.col);
+        if (rf) { showFailure(rf); return; }
         doRestAt(cell.row, cell.col);
         return;
       } else if (hit.furniture.action === 'info') {
-        log('\u{1F4AC} ' + hit.bld.name + ' — ' + hit.furniture.name + '：' + (hit.bld.desc || ''));
+        log('\u{1F4AC} ' + hit.bld.name + ' — ' + hit.furniture.n);
         return;
       }
     }
   }
 
-  // 未命中家具：格子级交互
-  if (!cell) {
-    state.selectedCell = null;
-    updateElevatorTarget();
-    updateInfoPanel();
-    render();
-    return;
-  }
+  // 格子级
+  if (!cell) { state.selectedCell = null; updateElevatorTarget(); updateInfoPanel(); render(); return; }
 
   if (state.selectedCell && state.selectedCell.row === cell.row && state.selectedCell.col === cell.col) {
-    state.selectedCell = null; // 取消选择
+    state.selectedCell = null;
   } else {
     state.selectedCell = cell;
     updateElevatorTarget();
   }
-
   updateInfoPanel();
   render();
 }
@@ -975,14 +1091,8 @@ function handleClick(mx, my) {
 function handleHover(mx, my) {
   state.hoveredCell = null;
   state.hoveredFurniture = null;
-
   var cell = getCellAt(mx, my);
-  if (!cell) {
-    canvas.style.cursor = 'default';
-    updateTooltip(null);
-    render();
-    return;
-  }
+  if (!cell) { canvas.style.cursor = 'default'; updateTooltip(null); render(); return; }
 
   var hit = getFurnitureAt(cell.row, cell.col, mx, my);
   if (hit) {
@@ -995,33 +1105,26 @@ function handleHover(mx, my) {
     canvas.style.cursor = state.grid[cell.row][cell.col] ? 'pointer' : 'crosshair';
     updateTooltip(null);
   }
-
   render();
 }
 
 // ── Tooltip ──
 var tooltipEl = document.getElementById('tooltip');
 function updateTooltip(hit) {
-  if (!hit) {
-    tooltipEl.style.display = 'none';
-    return;
-  }
-  var bld = hit.bld;
-  var f = hit.furniture;
-  var actionHint = '';
-  if (f.action === 'work') actionHint = ' [点击工作]';
-  else if (f.action === 'rest') actionHint = ' [点击休息 +1劳力]';
-  else if (f.action === 'info') actionHint = ' [点击查看]';
-  tooltipEl.textContent = bld.name + ' · ' + f.name + actionHint;
+  if (!hit) { tooltipEl.style.display = 'none'; return; }
+  var bld = hit.bld, f = hit.furniture;
+  var h = '';
+  if (f.action === 'work') h = ' [点击工作]';
+  else if (f.action === 'rest') h = ' [点击休息 +' + DEF.economy.restLaborGain + '劳力]';
+  else if (f.action === 'info') h = ' [点击查看]';
+  tooltipEl.textContent = bld.name + ' · ' + f.n + h;
   tooltipEl.style.display = 'block';
 }
 
 canvas.addEventListener('mousemove', function(e) {
   var rect = canvas.getBoundingClientRect();
   var sx = W / rect.width, sy = H / rect.height;
-  var mx = (e.clientX - rect.left) * sx;
-  var my = (e.clientY - rect.top) * sy;
-  handleHover(mx, my);
+  handleHover((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
   tooltipEl.style.left = (e.clientX + 16) + 'px';
   tooltipEl.style.top = (e.clientY - 28) + 'px';
 });
@@ -1036,25 +1139,23 @@ canvas.addEventListener('mouseleave', function() {
 canvas.addEventListener('click', function(e) {
   var rect = canvas.getBoundingClientRect();
   var sx = W / rect.width, sy = H / rect.height;
-  var mx = (e.clientX - rect.left) * sx;
-  var my = (e.clientY - rect.top) * sy;
-  handleClick(mx, my);
+  handleClick((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
 });
 
-// ═══════════════════════════════════════════════════════
-//  游戏逻辑
-// ═══════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════
+//  游戏逻辑 — 含规则校验 + 范畴倍率
+// ═════════════════════════════════════════════════════════════
 
 function doBuild(bldId) {
   var sel = state.selectedCell;
   if (!sel) return;
-  if (state.grid[sel.row][sel.col] !== null) return;
+  var fail = RULES.canBuild(bldId, sel.row, sel.col);
+  if (fail) { showFailure(fail); return; }
   var bld = bldById(bldId);
-  if (!canAfford(bld.cost)) { log('资源不足，无法建造 ' + bld.name); updateInfoPanel(); return; }
   payCost(bld.cost);
   state.grid[sel.row][sel.col] = bldId;
-  log('建造了 ' + bld.name + '（' + (CONFIG.gridRows - sel.row) + 'F）');
-  Events.emit('build', { row: sel.row, col: sel.col, bld: bld });
+  log('建造了 ' + bld.name + '（' + (DEF.grid.rows - sel.row) + 'F）');
+  fireOnBuilt(bldId, sel.row, sel.col);
   updateResourceDisplay();
   updateInfoPanel();
   render();
@@ -1067,29 +1168,33 @@ function doWorkAt(row, col) {
   var bld = bldById(bldId);
   if (!bld || !bld.work) return;
 
-  // 市场的交易逻辑
   if (bld.work.trade) {
-    if (!canAfford(bld.work.cost)) { log('劳动力不足，无法交易'); updateInfoPanel(); return; }
+    if (!canAfford(bld.work.cost)) { showFailure('劳动力不足，无法交易'); return; }
     payCost(bld.work.cost);
-    // 默认换食物（可在面板中选）
     addRes('food', 3);
     log('在市场交易：消耗2劳力 → +3食物');
     updateResourceDisplay(); updateInfoPanel(); render(); saveGame();
     return;
   }
 
-  if (!canAfford(bld.work.cost)) { log('劳动力不足，无法在 ' + bld.name + ' 工作'); updateInfoPanel(); return; }
+  var fail = RULES.canWork(row, col);
+  if (fail) { showFailure(fail); return; }
   payCost(bld.work.cost);
-  for (var k in bld.work.produce) addRes(k, bld.work.produce[k]);
+  var eff = getEffectiveProduce(bldId);
+  for (var k in eff) addRes(k, eff[k]);
 
-  // 工人动画
   var key = row + ',' + col;
-  state.workerStates[key] = { anim: 'working', until: Date.now() + CONFIG.workerAnimDuration };
+  state.workerStates[key] = { anim:'working', until:Date.now() + DEF.workers.animDuration };
 
   var prodStr = '';
-  for (var k2 in bld.work.produce) prodStr += '+' + bld.work.produce[k2] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[k2]||k2) + ' ';
-  log('在 ' + bld.name + ' 劳动 — ' + prodStr);
-  Events.emit('work', { row: row, col: col, bld: bld });
+  for (var k2 in eff) prodStr += '+' + eff[k2] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[k2]||k2) + ' ';
+  var multStr = '';
+  for (var k3 in eff) {
+    var m = getResourceMult(k3, bldId);
+    if (m > 1) multStr = ' (范畴加成×' + m.toFixed(2) + ')';
+  }
+  log('在 ' + bld.name + ' 劳动 — ' + prodStr + multStr);
+  Events.emit('work', { row:row, col:col, bld:bld });
   updateResourceDisplay();
   updateInfoPanel();
   render();
@@ -1097,13 +1202,9 @@ function doWorkAt(row, col) {
 }
 
 function doRestAt(row, col) {
-  // 点击床休息
-  addRes('labor', 1);
-  log('在住宅休息，恢复1点劳动力');
-  updateResourceDisplay();
-  updateInfoPanel();
-  render();
-  saveGame();
+  addRes('labor', DEF.economy.restLaborGain);
+  log('在住宅休息，恢复' + DEF.economy.restLaborGain + '点劳动力');
+  updateResourceDisplay(); updateInfoPanel(); render(); saveGame();
 }
 
 function doWork() {
@@ -1114,8 +1215,8 @@ function doWork() {
 function marketTrade(resType) {
   if (!state.selectedCell) return;
   if (state.grid[state.selectedCell.row][state.selectedCell.col] !== 'market') return;
-  if (!canAfford({ labor: 2 })) { log('劳动力不足'); updateInfoPanel(); return; }
-  payCost({ labor: 2 });
+  if (!canAfford({ labor:2 })) { showFailure('劳动力不足，无法交易'); return; }
+  payCost({ labor:2 });
   addRes(resType, 3);
   var rn = { food:'食物', wood:'木材', stone:'石材' }[resType];
   log('市场交易：消耗2劳力 → +3' + rn);
@@ -1125,14 +1226,14 @@ function marketTrade(resType) {
 function demolishBuilding() {
   var sel = state.selectedCell;
   if (!sel) return;
+  if (!state.grid[sel.row][sel.col]) return;
   var bldId = state.grid[sel.row][sel.col];
-  if (!bldId) return;
   var bld = bldById(bldId);
-  if (bld.cost.wood) addRes('wood', Math.floor(bld.cost.wood * CONFIG.demolishRefundRatio));
-  if (bld.cost.stone) addRes('stone', Math.floor(bld.cost.stone * CONFIG.demolishRefundRatio));
+  if (bld.cost.wood) addRes('wood', Math.floor(bld.cost.wood * DEF.economy.demolishRefundRatio));
+  if (bld.cost.stone) addRes('stone', Math.floor(bld.cost.stone * DEF.economy.demolishRefundRatio));
   state.grid[sel.row][sel.col] = null;
+  fireOnDestroy(bldId, sel.row, sel.col);
   log('拆除了 ' + bld.name);
-  Events.emit('demolish', { row: sel.row, col: sel.col });
   updateResourceDisplay(); updateInfoPanel(); render(); saveGame();
 }
 
@@ -1142,8 +1243,8 @@ function gameTick() {
   var laborDelta = 0, foodDelta = 0;
   var housingCount = 0, otherCount = 0;
 
-  for (var row = 0; row < CONFIG.gridRows; row++) {
-    for (var col = 0; col < CONFIG.gridCols; col++) {
+  for (var row = 0; row < DEF.grid.rows; row++) {
+    for (var col = 0; col < DEF.grid.cols; col++) {
       var bldId = state.grid[row][col];
       if (!bldId) continue;
       var bld = bldById(bldId);
@@ -1152,13 +1253,12 @@ function gameTick() {
     }
   }
 
-  laborDelta -= Math.floor(otherCount * CONFIG.maintLaborPerBuilding);
-  laborDelta -= CONFIG.baseLaborDecay;
+  laborDelta -= Math.floor(otherCount * DEF.economy.maintLaborPerBuilding);
+  laborDelta -= DEF.economy.baseLaborDecay;
   addRes('labor', laborDelta);
   addRes('food', foodDelta);
 
   updateResourceDisplay();
-  Events.emit('tick', { laborDelta: laborDelta, foodDelta: foodDelta });
 
   if (state.res.labor <= 0) log('劳动力耗尽！建造更多住宅以恢复。');
   if (state.res.food <= 0 && housingCount > 0) log('食物耗尽！住宅无法再生产劳动力。');
@@ -1167,7 +1267,7 @@ function gameTick() {
   saveGame();
 }
 
-// ── UI ──
+// ── UI 更新 ──
 function updateResourceDisplay() {
   document.getElementById('val-labor').textContent = Math.floor(state.res.labor);
   document.getElementById('val-food').textContent  = Math.floor(state.res.food);
@@ -1182,19 +1282,20 @@ function updateInfoPanel() {
 
   var row = sel.row, col = sel.col;
   var bldId = state.grid[row][col];
-  var floor = CONFIG.gridRows - row;
+  var floor = DEF.grid.rows - row;
 
   if (bldId) {
     var bld = bldById(bldId);
-    var html = '<span class="msg">' + bld.icon + ' <b>' + bld.name + '</b> ' + floor + 'F &nbsp; ' + bld.desc + '</span>';
+    var html = '<span class="msg">' + bld.icon + ' <b>' + bld.name + '</b> ' + floor + 'F · ' + (ECO[bld.category] ? ECO[bld.category].desc : '') + '</span>';
     if (bld.work) {
       if (bld.work.trade) {
         html += '<button class="btn" onclick="marketTrade(\'food\')">换食物</button>';
         html += '<button class="btn" onclick="marketTrade(\'wood\')">换木材</button>';
         html += '<button class="btn" onclick="marketTrade(\'stone\')">换石材</button>';
       } else {
+        var eff = getEffectiveProduce(bldId);
         var costStr = ''; for (var ck in bld.work.cost) costStr += bld.work.cost[ck] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[ck]||ck) + '+';
-        var prodStr = ''; for (var pk in bld.work.produce) prodStr += '+' + bld.work.produce[pk] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[pk]||pk) + ' ';
+        var prodStr = ''; for (var pk in eff) prodStr += '+' + eff[pk] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[pk]||pk) + ' ';
         var canWork = canAfford(bld.work.cost);
         html += '<button class="btn' + (canWork ? '' : ' disabled') + '" onclick="doWork()">工作 (' + costStr.slice(0,-1) + ' → ' + prodStr + ')</button>';
       }
@@ -1203,13 +1304,12 @@ function updateInfoPanel() {
     panel.innerHTML = html;
   } else {
     var html2 = '<span class="msg">空地 ' + floor + 'F &nbsp; 建造：</span>';
-    var blds = CONFIG.buildingDefs;
-    var idx = 0;
-    for (var bk in blds) {
-      var b = blds[bk]; idx++;
+    for (var bi = 0; bi < BLD_LIST.length; bi++) {
+      var b = BLD_LIST[bi];
+      var fail = RULES.canBuild(b.id, row, col);
       var cs = ''; for (var ck2 in b.cost) cs += b.cost[ck2] + ({ labor:'劳力',food:'食物',wood:'木材',stone:'石材' }[ck2]||ck2) + '+';
-      var afford = canAfford(b.cost);
-      html2 += '<button class="btn' + (afford ? '' : ' disabled') + '" onclick="doBuild(\'' + b.id + '\')"><b>' + idx + '</b> ' + b.icon + ' ' + b.name + ' (' + cs.slice(0,-1) + ')</button>';
+      var title = fail ? ' title="' + fail + '"' : '';
+      html2 += '<button class="btn' + (fail ? ' disabled' : '') + '" onclick="doBuild(\'' + b.id + '\')"' + title + '><b>' + (bi + 1) + '</b> ' + b.icon + ' ' + b.name + ' (' + cs.slice(0,-1) + ')</button>';
     }
     panel.innerHTML = html2;
   }
@@ -1223,9 +1323,10 @@ document.addEventListener('keydown', function(e) {
   if (!bldId) {
     var keys = ['1','2','3','4','5'];
     var idx = keys.indexOf(e.key);
-    if (idx >= 0) {
-      var blds = Object.keys(CONFIG.buildingDefs);
-      if (idx < blds.length) doBuild(CONFIG.buildingDefs[blds[idx]].id);
+    if (idx >= 0 && idx < BLD_LIST.length) {
+      var fail = RULES.canBuild(BLD_LIST[idx].id, sel.row, sel.col);
+      if (fail) { showFailure(fail); return; }
+      doBuild(BLD_LIST[idx].id);
     }
   } else {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doWork(); }
@@ -1249,10 +1350,8 @@ document.getElementById('restart-btn').addEventListener('click', function() {
   updateResourceDisplay();
   updateInfoPanel();
   render();
-  log('垂直纪元·劳工的诅咒 — 地下六层，劳工永困。点击器物可直接交互。');
-  setInterval(gameTick, CONFIG.tickInterval);
-
-  // 电梯动画循环
+  log('垂直纪元·劳工的诅咒 v3.0 — 师Stellaris七法，规则驱动、范畴承袭');
+  setInterval(gameTick, DEF.economy.tickInterval);
   setInterval(function() { render(); }, 1000 / 30);
 })();
 </script>
